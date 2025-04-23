@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  asterisk:
+    build: ./asterisk
+    network_mode: host
+    environment:
+      - ASTERISK_UID=1000
+      - ASTERISK_GID=1000
+    volumes:
+      - ./asterisk/config:/etc/asterisk
+      - /dev/shm:/dev/shm
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/shm
+
+  web:
+    build: ./web
+    network_mode: host

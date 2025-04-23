@@ -1,0 +1,15 @@
+{
+  "name": "asterisk-web-dialer",
+  "version": "1.0.0",
+  "description": "Web UI for Asterisk dialer with JACK audio access",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "asterisk-ami-client": "^1.1.1",
+    "cors": "^2.8.5"
+  }
+}

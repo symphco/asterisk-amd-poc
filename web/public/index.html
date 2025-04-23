@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Asterisk Web Dialer</title>
+</head>
+<body>
+  <h1>Asterisk Web Dialer</h1>
+  <input type="text" id="number" placeholder="Enter number"/>
+  <button id="callBtn">Call</button>
+  <h2>AMI Events</h2>
+  <ul id="logs"></ul>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const logs = document.getElementById('logs');
+    socket.on('amiEvent', data => {
+      const li = document.createElement('li');
+      li.textContent = JSON.stringify(data);
+      logs.appendChild(li);
+    });
+    document.getElementById('callBtn').addEventListener('click', () => {
+      const number = document.getElementById('number').value.trim();
+      fetch('/call', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({number})
+      })
+      .then(res => res.json())
+      .then(data => console.log('Call response:', data))
+      .catch(err => console.error(err));
+    });
+  </script>
+</body>
+</html>
