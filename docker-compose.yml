@@ -3,7 +3,6 @@ version: '3.8'
 services:
   asterisk:
     build: ./asterisk
-    network_mode: host
     environment:
       - ASTERISK_UID=1000
       - ASTERISK_GID=1000
@@ -12,9 +11,19 @@ services:
       - /dev/shm:/dev/shm
     cap_add:
       - SYS_ADMIN
-    devices:
-      - /dev/shm
+
 
   web:
     build: ./web
-    network_mode: host
+    # Map web UI port to host
+    ports:
+      - "3000:3000"
+    depends_on:
+      - asterisk
+    environment:
+      # Connect to the Asterisk container by its service name
+      - AMI_HOST=asterisk
+      - AMI_PORT=5038
+      - AMI_USER=admin
+      - AMI_SECRET=amp111
+    restart: unless-stopped

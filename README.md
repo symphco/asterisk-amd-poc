@@ -20,7 +20,11 @@ This project provides a Docker Compose setup for:
 
 1. Start services:
 
+   # Bring up both Asterisk (with JACK) and the Web UI
    docker-compose up --build
+
+   # Or in detached mode:
+   docker-compose up -d --build
 
 2. Access Web UI at http://localhost:3000.
 3. Enter a phone number and click Call.
