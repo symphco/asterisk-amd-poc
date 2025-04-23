@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Asterisk PBX with JACK support
+  asterisk:
+    build:
+      context: ./asterisk
+    # Expose SIP (UDP 5060) and RTP (UDP 10000-10100)
+    ports:
+      - "5060:5060/udp"
+      - "10000-10100:10000-10100/udp"
+    volumes:
+      - ./asterisk/config:/etc/asterisk:ro
+      - /dev/shm:/dev/shm
+    cap_add:
+      - SYS_ADMIN
+    restart: unless-stopped
+
+  # Web UI for dialing via AMI
+  web:
+    build:
+      context: ./web
+    # HTTP UI; Coolify will handle TLS and routing
+    ports:
+      - "3000:3000"
+    depends_on:
+      - asterisk
+    environment:
+      - AMI_HOST=asterisk
+      - AMI_PORT=5038
+      - AMI_USER=admin
+      - AMI_SECRET=amp111
+      - PORT=3000
+    restart: unless-stopped
+
+# Optional: define named volumes for persistent data
+volumes:
+  # asterisk-config:
+  #   external: false
+  # asterisk-spool:
+  # asterisk-logs:

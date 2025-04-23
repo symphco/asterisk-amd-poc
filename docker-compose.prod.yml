@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Asterisk PBX service with JACK support
+  asterisk:
+    build:
+      context: ./asterisk
+    # Use host networking for production to simplify SIP/RTP routing
+    network_mode: host
+    environment:
+      - ASTERISK_UID=1000
+      - ASTERISK_GID=1000
+    # Mount configs read-only; adjust volume names/paths as needed for persistence
+    volumes:
+      - ./asterisk/config:/etc/asterisk:ro
+      - /dev/shm:/dev/shm
+    cap_add:
+      - SYS_ADMIN
+    restart: unless-stopped
+
+  # Web UI service for dialing via Asterisk AMI
+  web:
+    build:
+      context: ./web
+    # Host network so it can reach AMI on localhost
+    network_mode: host
+    environment:
+      - AMI_HOST=127.0.0.1
+      - AMI_PORT=5038
+      - AMI_USER=admin
+      - AMI_SECRET=amp111
+      - PORT=3000
+    restart: unless-stopped
+
+# Volumes for persistent Asterisk data (optional)
+volumes:
+  # astetcdata:
+  #   host: ./asterisk/config
+  # asterisk-lib:
+  # asterisk-spool:
+  # asterisk-logs:
