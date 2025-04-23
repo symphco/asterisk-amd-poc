@@ -8,6 +8,7 @@
   <h1>Asterisk Web Dialer</h1>
   <input type="text" id="number" placeholder="Enter number"/>
   <button id="callBtn">Call</button>
+  <button id="healthBtn">Check AMI Health</button>
   <h2>AMI Events</h2>
   <ul id="logs"></ul>
   <script src="/socket.io/socket.io.js"></script>
@@ -27,8 +28,34 @@
         body: JSON.stringify({number})
       })
       .then(res => res.json())
-      .then(data => console.log('Call response:', data))
-      .catch(err => console.error(err));
+      .then(data => {
+        console.log('Call response:', data);
+        const li = document.createElement('li');
+        li.textContent = 'Call response: ' + JSON.stringify(data);
+        logs.appendChild(li);
+      })
+      .catch(err => {
+        console.error(err);
+        const li = document.createElement('li');
+        li.textContent = 'Call error: ' + err.message;
+        logs.appendChild(li);
+      });
+    });
+    document.getElementById('healthBtn').addEventListener('click', () => {
+      fetch('/health')
+        .then(res => res.json())
+        .then(data => {
+          console.log('Health response:', data);
+          const li = document.createElement('li');
+          li.textContent = 'Health response: ' + JSON.stringify(data);
+          logs.appendChild(li);
+        })
+        .catch(err => {
+          console.error('Health check error:', err);
+          const li = document.createElement('li');
+          li.textContent = 'Health error: ' + err.message;
+          logs.appendChild(li);
+        });
     });
   </script>
 </body>

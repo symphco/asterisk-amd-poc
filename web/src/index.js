@@ -18,31 +18,52 @@ const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
 
 const ami = new AmiClient();
+// Track connection state
+let amiConnected = false;
 
 ami.connect(AMI_USER, AMI_SECRET, { host: AMI_HOST, port: AMI_PORT })
   .then(() => {
+    amiConnected = true;
     console.log('Connected to Asterisk AMI');
     ami.on('event', (evt) => {
       io.emit('amiEvent', evt);
     });
   })
-  .catch(err => console.error('AMI Connection Error:', err));
+  .catch(err => {
+    amiConnected = false;
+    console.error('AMI Connection Error:', err);
+  });
 
+// Health check endpoint to verify AMI connection status
+app.get('/health', (req, res) => {
+  if (amiConnected) {
+    res.json({ success: true });
+  } else {
+    res.status(500).json({ success: false, error: 'Not connected to AMI' });
+  }
+});
+// Originate a call via AMI
 app.post('/call', (req, res) => {
   const { number } = req.body;
   if (!number) {
     return res.status(400).json({ error: 'Missing number' });
   }
-  ami.action('Originate', {
+  // Originate a call via AMI using callback API
+  // Originate action must be passed as an options object
+  ami.action({
+    Action: 'Originate',
     Channel: `SIP/provider/${number}`,
     Context: 'webdial',
     Exten: number,
     Priority: 1,
     CallerID: `webdial<100>`,
     Timeout: 30000
-  })
-    .then(response => res.json(response))
-    .catch(err => res.status(500).json({ error: err.message }));
+  }, (err, response) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(response);
+  });
 });
 
 const PORT = process.env.PORT || 3000;

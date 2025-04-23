@@ -31,5 +31,12 @@ This project provides a Docker Compose setup for:
    # Ensure no other service is using UDP 5060 or your RTP range
 
 2. Access Web UI at http://localhost:3000.
-3. Enter a phone number and click Call.
-4. Use a JACK client (e.g., QJackCtl, Carla) to connect to the 'asterisk' JACK port to listen to call audio.
+3. (Optional) Test AMI connectivity:
+   - **Via HTTP**: curl:
+     ```bash
+     curl http://localhost:3000/health
+     ```
+     You should get `{ success: true, amiResponse: ... }`.
+   - **Via Web UI**: click the **Check AMI Health** button on the page and look for the `Health response:` log in your browser console.
+4. Enter a phone number and click Call.
+5. Use a JACK client (e.g., QJackCtl, Carla) to connect to the 'asterisk' JACK port to listen to call audio.
