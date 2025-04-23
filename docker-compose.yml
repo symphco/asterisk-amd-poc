@@ -11,6 +11,12 @@ services:
       - /dev/shm:/dev/shm
     cap_add:
       - SYS_ADMIN
+    # Expose SIP, AMI, and RTP ports for Twilio SIP trunking
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060"
+      - "5038:5038"
+      # - "10000-20000:10000-20000/udp"
 
 
   web:
