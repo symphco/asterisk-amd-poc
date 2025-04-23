@@ -11,23 +11,22 @@ services:
       - /dev/shm:/dev/shm
     cap_add:
       - SYS_ADMIN
-    # Expose SIP, AMI, and RTP ports for Twilio SIP trunking
+    # Map SIP (UDP 5060), AMI (TCP 5038), and RTP (UDP 10000-10100) to the host
     ports:
       - "5060:5060/udp"
-      - "5060:5060"
       - "5038:5038"
-      # - "10000-20000:10000-20000/udp"
+      - "10000-10100:10000-10100/udp"
 
 
   web:
     build: ./web
-    # Map web UI port to host
+    # Map the Web UI port to host
     ports:
       - "3000:3000"
     depends_on:
       - asterisk
     environment:
-      # Connect to the Asterisk container by its service name
+      # Connect to Asterisk AMI by service name
       - AMI_HOST=asterisk
       - AMI_PORT=5038
       - AMI_USER=admin

@@ -26,6 +26,10 @@ This project provides a Docker Compose setup for:
    # Or in detached mode:
    docker-compose up -d --build
 
+   # For local Linux testing, Asterisk uses host networking
+   # SIP (5060) and RTP ports (10000-10100) are bound directly on the host
+   # Ensure no other service is using UDP 5060 or your RTP range
+
 2. Access Web UI at http://localhost:3000.
 3. Enter a phone number and click Call.
 4. Use a JACK client (e.g., QJackCtl, Carla) to connect to the 'asterisk' JACK port to listen to call audio.
